@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>URL Shortener</title>
+<style>
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f7f4fb;
+    color: #4a3f55;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    min-height: 100vh;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .container {
+    background: #e6e0f8;
+    padding: 3rem 3.5rem;
+    border-radius: 20px;
+    box-shadow: 0 8px 25px rgba(170, 155, 255, 0.3);
+    max-width: 440px;
+    width: 100%;
+    text-align: center;
+  }
+
+  h1 {
+    font-weight: 800;
+    font-size: 2.2rem;
+    margin-bottom: 2rem;
+    color: #6c5ca7;
+    letter-spacing: 1.1px;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  label {
+    font-weight: 600;
+    font-size: 1rem;
+    text-align: left;
+    display: block;
+    margin-bottom: 0.3rem;
+    color: #726a8a;
+    user-select: none;
+  }
+
+  input[type="url"],
+  input[type="text"],
+  input[type="datetime-local"] {
+    padding: 0.75rem 1.2rem;
+    font-size: 1rem;
+    border-radius: 12px;
+    border: 2px solid #cec6e8;
+    outline: none;
+    background: #faf8ff;
+    color: #564d6d;
+    font-weight: 600;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  input::placeholder {
+    color: #b3aee3;
+    font-weight: 400;
+  }
+
+  input[type="url"]:focus,
+  input[type="text"]:focus,
+  input[type="datetime-local"]:focus {
+    border-color: #8c7ae6;
+    box-shadow: 0 0 8px 2px #9a89ff88;
+    background: #f0ecff;
+  }
+
+  small {
+    color: #a99ed9;
+    font-weight: 400;
+    font-size: 0.85rem;
+    margin-top: -1rem;
+    margin-bottom: 0.8rem;
+    display: block;
+    text-align: left;
+  }
+
+  button {
+    background: linear-gradient(135deg, #b49df6, #8c7ae6);
+    padding: 0.85rem 0;
+    font-size: 1.2rem;
+    border-radius: 14px;
+    border: none;
+    font-weight: 700;
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 6px 15px rgba(141, 122, 230, 0.7);
+    transition: background 0.3s ease, transform 0.2s ease;
+  }
+
+  button:hover {
+    background: linear-gradient(135deg, #957be3, #6e5acc);
+    transform: scale(1.05);
+    box-shadow: 0 10px 25px rgba(123, 97, 214, 0.85);
+  }
+
+  button:active {
+    transform: scale(0.98);
+  }
+
+  .result {
+    margin-top: 1.8rem;
+    padding: 1rem;
+    background: #d9d4f3;
+    border-radius: 12px;
+    color: #3f3576;
+  }
+
+  img.qrcode {
+    margin-top: 1rem;
+    max-width: 200px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(150, 130, 255, 0.4);
+  }
+
+  @media (max-width: 480px) {
+    .container {
+      padding: 2rem 1.5rem;
+      border-radius: 16px;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <h1>Custom URL Shortener</h1>
+    <form method="POST" action="/shorten" novalidate>
+      <label for="url">Enter URL to shorten</label>
+      <input
+        id="url"
+        name="url"
+        type="url"
+        placeholder="https://example.com"
+        required
+        value="{{.OriginalURL}}"
+      />
+
+      <label for="customcode">Custom short code (optional)</label>
+      <input
+        id="customcode"
+        name="customcode"
+        type="text"
+        placeholder="e.g. mycode"
+        value="{{.CustomCode}}"
+      />
+
+      <label for="expiry">Expiry date & time</label>
+      <input
+        id="expiry"
+        name="expiry"
+        type="datetime-local"
+        value="{{if .Expiry}}{{.Expiry}}{{else}}{{.DefaultExpiry}}{{end}}"
+      />
+      <small>Default is 1 month from now</small>
+
+      <button type="submit">Shorten URL</button>
+    </form>
+
+    {{if .Error}}
+      <div class="result" style="color:#b02a2a;">{{.Error}}</div>
+    {{end}}
+
+    {{if .ShortURL}}
+      <div class="result">
+        Short URL: <a href="{{.ShortURL}}" target="_blank">{{.ShortURL}}</a><br />
+        Expiry: {{.Expiry}}<br />
+        {{if .QRCodeBase64}}
+          <img class="qrcode" src="{{.QRCodeBase64}}" alt="QR Code" />
+        {{end}}
+      </div>
+    {{end}}
+  </div>
+</body>
+</html>
