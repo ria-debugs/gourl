@@ -11,6 +11,7 @@ import (
     "strings"
     "sync"
     "time"
+    "os"
 
     "github.com/skip2/go-qrcode"
 )
@@ -208,9 +209,18 @@ func containsProfanity(text string) bool {
 }
 
 func getBaseURL(r *http.Request) string {
-    scheme := "http"
-    if r.TLS != nil {
-        scheme = "https"
+   
+
+    baseURL := os.Getenv("BASE_URL")
+    if baseURL == "" {
+        // local
+        baseURL = "http://localhost:8080"
     }
-    return scheme + "://" + r.Host
+    return baseURL
+   // scheme := "http"
+   // if r.TLS != nil {
+   //     scheme = "https"
+   // }
+   // return scheme + "://" + r.Host
+   //return "https://gourl.onrender.com"
 }
